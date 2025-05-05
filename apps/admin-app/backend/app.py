@@ -1,23 +1,33 @@
 from flask import Flask
-from flask_socketio import SocketIO
+from flask_cors import CORS
 from pymongo import MongoClient
-
-import config
+from dotenv import load_dotenv
+import os
 from routes import register_routes
+from flask_socketio import SocketIO
+
+load_dotenv()
+
+DATABASE = os.getenv("DB_NAME")
+MONGO_URI = os.getenv("MONGO_URI")
+
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = config.SECRET_KEY
+CORS(app)
 
-# MongoDB client
-client = MongoClient(config.MONGODB_URI)
-db = client[config.DB_NAME]
-print(f"▶︎ Connected to MongoDB: {config.MONGODB_URI}, DB: {config.DB_NAME}")
+# base directory of your project
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-# Socket.IO
+# point uploads into static/uploads under your app
+app.config["UPLOAD_FOLDER"] = os.path.join(basedir, os.getenv("UPLOAD_FOLDER"))
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+
+client = MongoClient(MONGO_URI)
+db = client[DATABASE]
+
 socketio = SocketIO(app, cors_allowed_origins="*")
-
-# Routes (pass in db and socketio)
 register_routes(app, db, socketio)
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, debug=True)
