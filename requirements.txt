@@ -1,0 +1,9 @@
+Flask==2.3.2
+Flask-SocketIO==5.3.2
+python-socketio==5.9.0        # for backend real-time support
+pymongo==4.4.0                # MongoDB driver
+streamlit==1.24.1
+streamlit-autorefresh==1.0.1  # for frontend polling
+pandas==2.0.1
+matplotlib==3.7.1
+python-dotenv==1.0.0
